@@ -1,0 +1,657 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans,system-ui,sans-serif);color:var(--color-text-primary);background:transparent;font-size:14px;}
+
+.nav{display:flex;gap:2px;padding:4px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);margin-bottom:16px;border:0.5px solid var(--color-border-tertiary);}
+.nav-btn{flex:1;padding:8px 4px;border:none;background:transparent;border-radius:10px;font-size:12px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;font-family:inherit;transition:all .15s;}
+.nav-btn.active{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-tertiary);}
+
+.module{display:none;}.module.active{display:block;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px;}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;}
+.kpi-val{font-size:22px;font-weight:500;line-height:1;}
+.kpi-lbl{font-size:11px;color:var(--color-text-tertiary);margin-top:4px;text-transform:uppercase;letter-spacing:.04em;}
+.kpi-delta{font-size:11px;margin-top:3px;font-weight:500;}
+.delta-up{color:var(--color-text-success);}.delta-down{color:var(--color-text-danger);}
+
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.card-title{font-size:12px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.card-title-row .card-title{margin-bottom:0;}
+
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;}
+.badge-danger{background:var(--color-background-danger);color:var(--color-text-danger);}
+.badge-warn{background:var(--color-background-warning);color:var(--color-text-warning);}
+.badge-success{background:var(--color-background-success);color:var(--color-text-success);}
+.badge-info{background:var(--color-background-info);color:var(--color-text-info);}
+.badge-purple{background:#EEEDFE;color:#534AB7;}
+
+.row-item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}
+.row-item:last-child{border-bottom:none;}
+.row-label{color:var(--color-text-secondary);}
+.row-val{font-weight:500;color:var(--color-text-primary);}
+
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.alert-item:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.alert-name{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.alert-desc{font-size:12px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4;}
+.alert-time{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+
+.progress-bar{height:5px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;margin-top:5px;}
+.progress-fill{height:5px;border-radius:99px;}
+
+.action-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.action-item:last-child{border-bottom:none;}
+.action-num{width:22px;height:22px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.action-body{flex:1;}
+.action-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.action-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+
+.nurse-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.nurse-row:last-child{border-bottom:none;}
+.nurse-avatar{width:30px;height:30px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nurse-name{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.nurse-meta{font-size:11px;color:var(--color-text-tertiary);}
+.util-bar{flex:1;height:5px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;margin:0 10px;}
+.util-fill{height:5px;border-radius:99px;}
+
+.mini-stat{text-align:center;padding:10px 8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);}
+.mini-val{font-size:18px;font-weight:500;}
+.mini-lbl{font-size:11px;color:var(--color-text-tertiary);margin-top:3px;}
+
+.engagement-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.engagement-item:last-child{border-bottom:none;}
+.eng-name{font-size:13px;font-weight:500;color:var(--color-text-primary);min-width:110px;}
+.eng-bar{flex:1;height:6px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;}
+.eng-fill{height:6px;border-radius:99px;}
+.eng-pct{font-size:12px;font-weight:500;color:var(--color-text-secondary);min-width:32px;text-align:right;}
+
+.ai-insight{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.ai-icon{width:24px;height:24px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-text{font-size:13px;color:var(--color-text-secondary);line-height:1.55;}
+.ai-text strong{color:var(--color-text-primary);font-weight:500;}
+
+.timeline-item{display:flex;gap:12px;padding:8px 0;}
+.tl-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.tl-line{width:1px;flex:1;background:var(--color-border-tertiary);margin-top:4px;}
+.tl-body{flex:1;padding-bottom:8px;}
+.tl-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.tl-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.tl-time{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+
+.channel-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.channel-row:last-child{border-bottom:none;}
+.channel-name{font-size:13px;color:var(--color-text-primary);min-width:90px;}
+.channel-bar{flex:1;height:6px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;}
+.channel-fill{height:6px;border-radius:99px;}
+.channel-val{font-size:12px;font-weight:500;color:var(--color-text-secondary);min-width:36px;text-align:right;}
+
+.ask-btn{font-size:12px;color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:5px 10px;cursor:pointer;background:transparent;font-family:inherit;margin-top:10px;}
+.ask-btn:hover{background:var(--color-background-secondary);}
+
+.section-divider{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 10px;padding-bottom:6px;border-bottom:0.5px solid var(--color-border-tertiary);}
+
+.sparkline{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:6px;}
+.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px;}
+
+.risk-gauge{display:flex;justify-content:space-between;gap:6px;margin-top:8px;}
+.gauge-seg{flex:1;height:8px;border-radius:99px;}
+
+.two-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+</style>
+
+<div>
+<div class="nav">
+  <button class="nav-btn active" onclick="switchModule('care')">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M8 14s-6-3.5-6-8a4 4 0 018 0 4 4 0 018 0c0 4.5-6 8-6 8z" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+    Care delivery
+  </button>
+  <button class="nav-btn" onclick="switchModule('ops')">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline;vertical-align:middle;margin-right:4px"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+    Operations
+  </button>
+  <button class="nav-btn" onclick="switchModule('patient')">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    Patient engagement
+  </button>
+  <button class="nav-btn" onclick="switchModule('intelligence')">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    AI intelligence
+  </button>
+</div>
+
+<!-- MODULE 1: CARE DELIVERY -->
+<div class="module active" id="module-care">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:#E24B4A">3</div><div class="kpi-lbl">Critical patients</div><div class="kpi-delta delta-down">+1 since yesterday</div></div>
+    <div class="kpi"><div class="kpi-val">24</div><div class="kpi-lbl">Visits today</div><div class="kpi-delta delta-up">18 completed</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#1D9E75">94%</div><div class="kpi-lbl">Protocol adherence</div><div class="kpi-delta delta-up">+3% vs last week</div></div>
+    <div class="kpi"><div class="kpi-val">67 min</div><div class="kpi-lbl">Avg response time</div><div class="kpi-delta delta-up">Down from 94 min</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">AI risk alerts — live</div>
+        <span class="badge badge-danger">3 critical</span>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#E24B4A"></div>
+        <div style="flex:1">
+          <div class="alert-name">Ramesh Iyer · 68y · Diabetes</div>
+          <div class="alert-desc">SpO2 dropped to 94%, glucose 312 mg/dL uncontrolled, 36h unresponsive</div>
+          <div class="alert-time">Flagged 14 mins ago · Risk score: 91/100</div>
+        </div>
+        <span class="badge badge-danger">Now</span>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#E24B4A"></div>
+        <div style="flex:1">
+          <div class="alert-name">Lakshmi Venkat · 74y · COPD</div>
+          <div class="alert-desc">SpO2 at 91%, nebuliser used 4x today, HR 102 bpm elevated</div>
+          <div class="alert-time">Flagged 31 mins ago · Risk score: 88/100</div>
+        </div>
+        <span class="badge badge-danger">Now</span>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#EF9F27"></div>
+        <div style="flex:1">
+          <div class="alert-name">Meena Krishnan · 62y · Stroke rehab</div>
+          <div class="alert-desc">Adherence dropped 90%→64%, missed 2 physio sessions, confusion episodes reported</div>
+          <div class="alert-time">Flagged 2 hrs ago · Risk score: 74/100</div>
+        </div>
+        <span class="badge badge-warn">Today</span>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#EF9F27"></div>
+        <div style="flex:1">
+          <div class="alert-name">Arjun Pillai · 45y · Hypertension</div>
+          <div class="alert-desc">BP 162/98 — 4 consecutive critical readings, activity 800 steps/day</div>
+          <div class="alert-time">Flagged 3 hrs ago · Risk score: 68/100</div>
+        </div>
+        <span class="badge badge-warn">Today</span>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('Generate AI care actions for all critical patients today')">Generate AI care plan for all critical patients ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">AI-recommended actions</div>
+        <span class="badge badge-purple">AI generated</span>
+      </div>
+      <div class="action-item">
+        <div class="action-num">1</div>
+        <div class="action-body">
+          <div class="action-title">Dispatch nurse to Ramesh Iyer immediately</div>
+          <div class="action-sub">Unscheduled visit — bring glucose kit and SpO2 monitor. Priya S. is 2.3km away.</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">2</div>
+        <div class="action-body">
+          <div class="action-title">Emergency outreach to Lakshmi Venkat's family</div>
+          <div class="action-sub">Call son Suresh (+91 98411 45678). Prepare hospital referral if SpO2 drops below 90%.</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">3</div>
+        <div class="action-body">
+          <div class="action-title">Medication review — Meena Krishnan</div>
+          <div class="action-sub">Schedule neurologist teleconsult. Simplify pill regimen — current complexity is causing drop-offs.</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">4</div>
+        <div class="action-body">
+          <div class="action-title">Reschedule 3 overdue diagnostics</div>
+          <div class="action-sub">Savitha Rao (creatinine), Arjun Pillai (lipid panel), Meena Krishnan (MRI follow-up)</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">5</div>
+        <div class="action-body">
+          <div class="action-title">Send WhatsApp pulse check to 7 silent patients</div>
+          <div class="action-sub">No engagement in 48+ hours. AI drafted personalised messages for each. Approve to send.</div>
+        </div>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('How does the AI generate care actions from patient data?')">How does the AI generate these? ↗</button>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Visit completion — today</div>
+      <div class="two-col-grid" style="margin-bottom:10px;">
+        <div class="mini-stat"><div class="mini-val" style="color:#1D9E75">18</div><div class="mini-lbl">Completed</div></div>
+        <div class="mini-stat"><div class="mini-val" style="color:#EF9F27">6</div><div class="mini-lbl">Pending</div></div>
+      </div>
+      <div class="row-item"><span class="row-label">On-time rate</span><span class="row-val" style="color:#1D9E75">89%</span></div>
+      <div class="row-item"><span class="row-label">Avg visit duration</span><span class="row-val">42 min</span></div>
+      <div class="row-item"><span class="row-label">Unscheduled visits</span><span class="row-val" style="color:#E24B4A">2 today</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Diagnostic pipeline</div>
+      <div class="row-item"><span class="row-label">Samples collected</span><span class="row-val">11</span></div>
+      <div class="row-item"><span class="row-label">Results pending</span><span class="row-val" style="color:#EF9F27">5</span></div>
+      <div class="row-item"><span class="row-label">Abnormal flags</span><span class="row-val" style="color:#E24B4A">3 auto-flagged</span></div>
+      <div class="row-item"><span class="row-label">Avg TAT</span><span class="row-val">6.2 hrs</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Risk distribution</div>
+      <div class="risk-gauge" style="margin-bottom:8px;">
+        <div class="gauge-seg" style="background:#E24B4A;flex:3"></div>
+        <div class="gauge-seg" style="background:#EF9F27;flex:4"></div>
+        <div class="gauge-seg" style="background:#378ADD;flex:5"></div>
+        <div class="gauge-seg" style="background:#1D9E75;flex:6"></div>
+      </div>
+      <div class="row-item"><span class="row-label">Critical (80+)</span><span class="row-val" style="color:#E24B4A">3 patients</span></div>
+      <div class="row-item"><span class="row-label">High (60–79)</span><span class="row-val" style="color:#EF9F27">4 patients</span></div>
+      <div class="row-item"><span class="row-label">Medium (40–59)</span><span class="row-val" style="color:#378ADD">5 patients</span></div>
+      <div class="row-item"><span class="row-label">Stable (&lt;40)</span><span class="row-val" style="color:#1D9E75">6 patients</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE 2: OPERATIONS -->
+<div class="module" id="module-ops">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val">87%</div><div class="kpi-lbl">Nurse utilisation</div><div class="kpi-delta delta-up">+5% vs last month</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#1D9E75">28 min</div><div class="kpi-lbl">Avg travel time</div><div class="kpi-delta delta-up">Down from 41 min</div></div>
+    <div class="kpi"><div class="kpi-val">₹2.4L</div><div class="kpi-lbl">Est. monthly savings</div><div class="kpi-delta delta-up">Route optimisation</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#EF9F27">3</div><div class="kpi-lbl">Supply alerts</div><div class="kpi-delta delta-down">Reorder needed</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">Nurse workforce — live</div>
+        <span class="badge badge-info">8 on duty</span>
+      </div>
+      <div class="nurse-row">
+        <div class="nurse-avatar" style="background:#EEEDFE;color:#534AB7">PS</div>
+        <div style="flex:1">
+          <div class="nurse-name">Priya S.</div>
+          <div class="nurse-meta">3 visits done · 2 pending · 2.3km to next</div>
+        </div>
+        <div class="util-bar"><div class="util-fill" style="width:90%;background:#534AB7"></div></div>
+        <span style="font-size:12px;font-weight:500;color:#534AB7">90%</span>
+      </div>
+      <div class="nurse-row">
+        <div class="nurse-avatar" style="background:#E1F5EE;color:#0F6E56">KR</div>
+        <div style="flex:1">
+          <div class="nurse-name">Kavitha R.</div>
+          <div class="nurse-meta">4 visits done · 1 pending · En route</div>
+        </div>
+        <div class="util-bar"><div class="util-fill" style="width:100%;background:#0F6E56"></div></div>
+        <span style="font-size:12px;font-weight:500;color:#0F6E56">100%</span>
+      </div>
+      <div class="nurse-row">
+        <div class="nurse-avatar" style="background:#FAEEDA;color:#854F0B">AM</div>
+        <div style="flex:1">
+          <div class="nurse-name">Anita M.</div>
+          <div class="nurse-meta">2 visits done · 3 pending · Available</div>
+        </div>
+        <div class="util-bar"><div class="util-fill" style="width:62%;background:#854F0B"></div></div>
+        <span style="font-size:12px;font-weight:500;color:#854F0B">62%</span>
+      </div>
+      <div class="nurse-row">
+        <div class="nurse-avatar" style="background:#FAECE7;color:#993C1D">DP</div>
+        <div style="flex:1">
+          <div class="nurse-name">Divya P.</div>
+          <div class="nurse-meta">2 visits done · 2 pending · Break</div>
+        </div>
+        <div class="util-bar"><div class="util-fill" style="width:75%;background:#993C1D"></div></div>
+        <span style="font-size:12px;font-weight:500;color:#993C1D">75%</span>
+      </div>
+      <div class="nurse-row">
+        <div class="nurse-avatar" style="background:#EAF3DE;color:#3B6D11">RT</div>
+        <div style="flex:1">
+          <div class="nurse-name">Rekha T.</div>
+          <div class="nurse-meta">1 visit done · 4 pending · Available</div>
+        </div>
+        <div class="util-bar"><div class="util-fill" style="width:45%;background:#3B6D11"></div></div>
+        <span style="font-size:12px;font-weight:500;color:#3B6D11">45%</span>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('How should we redistribute todays nurse visits to reduce travel time?')">AI visit redistribution ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AI-generated ops insights</div>
+      <div class="ai-insight">
+        <div class="ai-icon"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="#534AB7" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="ai-text"><strong>Kavitha R. is over-assigned.</strong> She has 5 visits today vs team avg of 3.2. Recommend shifting her 5pm visit to Rekha T. who has 45% utilisation and is 1.1km closer to that patient.</div>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-icon"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="#534AB7" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="ai-text"><strong>Route inefficiency detected in South Zone.</strong> 3 nurses will be within 800m of each other at 3pm. Resequencing saves 34 km and ~52 minutes of combined travel today.</div>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-icon"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="#534AB7" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="ai-text"><strong>Wound care kit stock critically low.</strong> Current stock covers 4 more visits. At current burn rate, stockout in ~9 hours. Nearest supplier: Medline Hyderabad (same-day delivery available).</div>
+      </div>
+      <div class="ai-insight">
+        <div class="ai-icon"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="#534AB7" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="ai-text"><strong>Friday demand spike forecast.</strong> Model predicts 31% more inbound triage calls on Friday based on 8-week pattern. Recommend scheduling 1 additional nurse on standby.</div>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('Show me the full operations optimisation recommendations for this week')">Full ops recommendations ↗</button>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Supply inventory</div>
+      <div class="row-item"><span class="row-label">Wound care kits</span><span class="row-val" style="color:#E24B4A">4 left ⚠</span></div>
+      <div class="row-item"><span class="row-label">Glucose strips</span><span class="row-val" style="color:#EF9F27">22 left</span></div>
+      <div class="row-item"><span class="row-label">IV lines</span><span class="row-val" style="color:#1D9E75">48 left</span></div>
+      <div class="row-item"><span class="row-label">SpO2 probes</span><span class="row-val" style="color:#1D9E75">15 left</span></div>
+      <div class="row-item"><span class="row-label">Nebuliser masks</span><span class="row-val" style="color:#EF9F27">8 left</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Billing pipeline</div>
+      <div class="row-item"><span class="row-label">Claims this month</span><span class="row-val">₹18.4L</span></div>
+      <div class="row-item"><span class="row-label">Approved</span><span class="row-val" style="color:#1D9E75">₹14.1L</span></div>
+      <div class="row-item"><span class="row-label">Pending review</span><span class="row-val" style="color:#EF9F27">₹3.2L</span></div>
+      <div class="row-item"><span class="row-label">Rejected</span><span class="row-val" style="color:#E24B4A">₹1.1L</span></div>
+      <div class="row-item"><span class="row-label">AI rejection fix rate</span><span class="row-val" style="color:#1D9E75">78%</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Nurse performance scores</div>
+      <div class="engagement-item">
+        <div class="eng-name">Priya S.</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:94%;background:#1D9E75"></div></div>
+        <div class="eng-pct" style="color:#1D9E75">94</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Kavitha R.</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:91%;background:#1D9E75"></div></div>
+        <div class="eng-pct" style="color:#1D9E75">91</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Anita M.</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:83%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">83</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Divya P.</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:79%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">79</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Rekha T.</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:71%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">71</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE 3: PATIENT ENGAGEMENT -->
+<div class="module" id="module-patient">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:#1D9E75">78%</div><div class="kpi-lbl">Engagement rate</div><div class="kpi-delta delta-up">+12% vs last month</div></div>
+    <div class="kpi"><div class="kpi-val">4.7</div><div class="kpi-lbl">Patient NPS</div><div class="kpi-delta delta-up">Out of 5</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#EF9F27">4</div><div class="kpi-lbl">Churn risk patients</div><div class="kpi-delta delta-down">AI-flagged this week</div></div>
+    <div class="kpi"><div class="kpi-val">92%</div><div class="kpi-lbl">Family satisfaction</div><div class="kpi-delta delta-up">+8% post WhatsApp</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">Patient engagement feed</div>
+        <span class="badge badge-info">Live</span>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot-col"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Savitha Rao opened her lab result WhatsApp update</div>
+          <div class="tl-sub">AI summary of creatinine results sent. Family acknowledged. Follow-up booked.</div>
+          <div class="tl-time">4 mins ago · via WhatsApp</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot-col"><div class="tl-dot" style="background:#534AB7"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">AI companion sent medication reminder to Meena Krishnan</div>
+          <div class="tl-sub">Hindi language — "Meena ji, aapki dawai ka time ho gaya." Confirmed received.</div>
+          <div class="tl-time">18 mins ago · via WhatsApp</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot-col"><div class="tl-dot" style="background:#EF9F27"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Arjun Pillai has not responded to 2 consecutive check-ins</div>
+          <div class="tl-sub">AI escalated to care coordinator. Churn risk elevated to High.</div>
+          <div class="tl-time">1 hr ago · Churn flag triggered</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot-col"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Post-visit summary sent to Suresh Naidu's family</div>
+          <div class="tl-sub">Auto-generated by AI after Anita M.'s visit. Wound status, next steps, nurse's observations.</div>
+          <div class="tl-time">2 hrs ago · via WhatsApp</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot-col"><div class="tl-dot" style="background:#E24B4A"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="tl-title">Ramesh Iyer's family called in — distressed</div>
+          <div class="tl-sub">AI triage routed to senior coordinator. Family briefed on nurse dispatch status.</div>
+          <div class="tl-time">3 hrs ago · Inbound call</div>
+        </div>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('Draft WhatsApp messages for the 4 patients at churn risk')">Draft churn-prevention messages ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Engagement by channel and patient</div>
+      <div class="section-divider" style="margin-top:0;">Channel breakdown</div>
+      <div class="channel-row">
+        <div class="channel-name">WhatsApp</div>
+        <div class="channel-bar"><div class="channel-fill" style="width:82%;background:#1D9E75"></div></div>
+        <div class="channel-val">82%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-name">Voice call</div>
+        <div class="channel-bar"><div class="channel-fill" style="width:11%;background:#378ADD"></div></div>
+        <div class="channel-val">11%</div>
+      </div>
+      <div class="channel-row">
+        <div class="channel-name">In-app</div>
+        <div class="channel-bar"><div class="channel-fill" style="width:7%;background:#EF9F27"></div></div>
+        <div class="channel-val">7%</div>
+      </div>
+      <div class="section-divider">Patient engagement scores</div>
+      <div class="engagement-item">
+        <div class="eng-name">Savitha Rao</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:92%;background:#1D9E75"></div></div>
+        <div class="eng-pct" style="color:#1D9E75">92%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Suresh Naidu</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:84%;background:#1D9E75"></div></div>
+        <div class="eng-pct" style="color:#1D9E75">84%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Meena Krishnan</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:61%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">61%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Lakshmi Venkat</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:55%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">55%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Arjun Pillai</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:28%;background:#E24B4A"></div></div>
+        <div class="eng-pct" style="color:#E24B4A">28%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">AI churn prediction</div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#E24B4A"></div>
+        <div><div class="alert-name">Arjun Pillai</div><div class="alert-desc">No response 48h, skipped visit, BP uncontrolled. Churn probability: 74%</div></div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#EF9F27"></div>
+        <div><div class="alert-name">Ramesh Iyer</div><div class="alert-desc">Family distress signals. Churn risk if crisis not resolved. Probability: 52%</div></div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-dot" style="background:#EF9F27"></div>
+        <div><div class="alert-name">Lakshmi Venkat</div><div class="alert-desc">Hospitalisation risk — if admitted, may not return. Probability: 48%</div></div>
+      </div>
+      <button class="ask-btn" onclick="sendPrompt('What retention interventions work best for high-risk home healthcare patients in India?')">Retention strategies ↗</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Upsell opportunities — AI flagged</div>
+      <div class="row-item"><span class="row-label">Meena Krishnan</span><span class="badge badge-success">RPM package</span></div>
+      <div class="row-item"><span class="row-label">Savitha Rao</span><span class="badge badge-info">Monthly diagnostics</span></div>
+      <div class="row-item"><span class="row-label">Suresh Naidu</span><span class="badge badge-purple">Physio plan</span></div>
+      <div class="row-item"><span class="row-label">Arjun Pillai</span><span class="badge badge-warn">Chronic care plan</span></div>
+      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:10px;">Est. additional ARR if converted: ₹3.8L/year</div>
+      <button class="ask-btn" onclick="sendPrompt('Draft personalised upsell messages for these 4 patients')">Draft upsell messages ↗</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Multilingual AI messages sent</div>
+      <div class="row-item"><span class="row-label">Hindi</span><span class="row-val">14 today</span></div>
+      <div class="row-item"><span class="row-label">Telugu</span><span class="row-val">8 today</span></div>
+      <div class="row-item"><span class="row-label">Tamil</span><span class="row-val">5 today</span></div>
+      <div class="row-item"><span class="row-label">Kannada</span><span class="row-val">3 today</span></div>
+      <div class="row-item"><span class="row-label">English</span><span class="row-val">6 today</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE 4: AI INTELLIGENCE LAYER -->
+<div class="module" id="module-intelligence">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val" style="color:#534AB7">94%</div><div class="kpi-lbl">Model accuracy</div><div class="kpi-delta delta-up">Risk prediction</div></div>
+    <div class="kpi"><div class="kpi-val">18</div><div class="kpi-lbl">Data sources active</div><div class="kpi-delta delta-up">All systems connected</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#1D9E75">247</div><div class="kpi-lbl">Decisions automated</div><div class="kpi-delta delta-up">Today · 0 overrides</div></div>
+    <div class="kpi"><div class="kpi-val">1.2s</div><div class="kpi-lbl">Avg inference time</div><div class="kpi-delta delta-up">Per patient signal</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Data ingestion — live signals</div>
+      <div class="row-item"><span class="row-label">IoT vitals (RPM devices)</span><span class="badge badge-success">Live · 18 devices</span></div>
+      <div class="row-item"><span class="row-label">Nurse visit notes (voice)</span><span class="badge badge-success">Live · 18 today</span></div>
+      <div class="row-item"><span class="row-label">WhatsApp engagement</span><span class="badge badge-success">Live · 36 events</span></div>
+      <div class="row-item"><span class="row-label">Diagnostic lab results</span><span class="badge badge-success">Live · 11 results</span></div>
+      <div class="row-item"><span class="row-label">Medication dispenser logs</span><span class="badge badge-warn">Partial · 9/18</span></div>
+      <div class="row-item"><span class="row-label">CRM and scheduling</span><span class="badge badge-success">Live</span></div>
+      <div class="row-item"><span class="row-label">Family call transcripts</span><span class="badge badge-success">Live · 4 today</span></div>
+      <div class="row-item"><span class="row-label">Insurance and billing</span><span class="badge badge-info">Batch · 6hr delay</span></div>
+      <button class="ask-btn" onclick="sendPrompt('What should be our data architecture for the Intelligent Patient Memory Layer?')">Design the memory layer ↗</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AI model performance</div>
+      <div class="section-divider" style="margin-top:0;">Risk prediction accuracy</div>
+      <div class="engagement-item">
+        <div class="eng-name">30-day readmit</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:94%;background:#534AB7"></div></div>
+        <div class="eng-pct" style="color:#534AB7">94%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Vital anomaly</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:91%;background:#534AB7"></div></div>
+        <div class="eng-pct" style="color:#534AB7">91%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Churn prediction</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:79%;background:#EF9F27"></div></div>
+        <div class="eng-pct" style="color:#EF9F27">79%</div>
+      </div>
+      <div class="engagement-item">
+        <div class="eng-name">Med adherence</div>
+        <div class="eng-bar"><div class="eng-fill" style="width:86%;background:#534AB7"></div></div>
+        <div class="eng-pct" style="color:#534AB7">86%</div>
+      </div>
+      <div class="section-divider">Automation decisions today</div>
+      <div class="row-item"><span class="row-label">Alerts auto-routed</span><span class="row-val">41</span></div>
+      <div class="row-item"><span class="row-label">Messages auto-sent</span><span class="row-val">36</span></div>
+      <div class="row-item"><span class="row-label">Visit slots auto-scheduled</span><span class="row-val">8</span></div>
+      <div class="row-item"><span class="row-label">Claims auto-generated</span><span class="row-val">11</span></div>
+      <div class="row-item"><span class="row-label">Human overrides needed</span><span class="row-val" style="color:#1D9E75">0 today</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px;">
+    <div class="card-title-row">
+      <div class="card-title">Intelligence layer — decision log</div>
+      <span class="badge badge-purple">Last 6 decisions</span>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#E24B4A"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">ESCALATE — Ramesh Iyer risk score crossed 90</div>
+        <div class="tl-sub">Inputs: SpO2 94% (IoT), glucose 312mg/dL (nurse note), 36h no WhatsApp response. Action: Paged coordinator + dispatched nurse Priya S.</div>
+        <div class="tl-time">14 mins ago · Confidence: 97% · Auto-executed</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#534AB7"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">OPTIMISE — Rerouted Anita M. to avoid traffic on NH-44</div>
+        <div class="tl-sub">Detected 22-min delay on planned route. Alternative route saves 18 mins, adds 2.1km. Patient arrival ETA maintained.</div>
+        <div class="tl-time">38 mins ago · Confidence: 88% · Auto-executed</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">ENGAGE — Sent medication reminder to Meena Krishnan in Hindi</div>
+        <div class="tl-sub">Trigger: adherence dropped below 70% threshold. Message personalised using patient language preference and past response patterns.</div>
+        <div class="tl-time">1 hr ago · Confidence: 93% · Auto-executed</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#EF9F27"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">FLAG — Arjun Pillai elevated to churn risk</div>
+        <div class="tl-sub">48h silence + skipped visit + BP uncontrolled. Churn probability model: 74%. Action: Queued personalised re-engagement call for coordinator.</div>
+        <div class="tl-time">2 hrs ago · Confidence: 81% · Awaiting human approval</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#534AB7"></div><div class="tl-line"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">GENERATE — Auto-created 11 insurance claims from visit notes</div>
+        <div class="tl-sub">Voice notes → structured SOAP notes → ICD-10 coded claims. Predicted approval rate: 89%. 2 flagged for human review before submission.</div>
+        <div class="tl-time">3 hrs ago · Confidence: 89% · Submitted for review</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-dot-col"><div class="tl-dot" style="background:#1D9E75"></div></div>
+      <div class="tl-body">
+        <div class="tl-title">RECOMMEND — Upsell: suggested RPM package for Meena Krishnan</div>
+        <div class="tl-sub">Model detected deteriorating trend + high family engagement. RPM would reduce unscheduled visits by est. 40%. ROI positive in 6 weeks.</div>
+        <div class="tl-time">4 hrs ago · Confidence: 76% · Queued for coordinator review</div>
+      </div>
+    </div>
+    <button class="ask-btn" onclick="sendPrompt('What is the full technical architecture of the AI intelligence layer for a home healthcare company?')">Full AI architecture ↗</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+function switchModule(id){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('module-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
